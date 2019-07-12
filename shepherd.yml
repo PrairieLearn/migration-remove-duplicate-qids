@@ -1,0 +1,9 @@
+id: remove-duplicate-qids
+title: Remove duplicate QIDs from assessments
+adapter:
+  type: github
+  search_query: org:PrairieLearn path:/ filename:infoCourse.json uuid
+hooks:
+  should_migrate: node $SHEPHERD_MIGRATION_DIR/courseHasDuplicateQids.js
+  apply: node $SHEPHERD_MIGRATION_DIR/removeDuplicateQids.js
+  pr_message: $SHEPHERD_MIGRATION_DIR/pr.sh

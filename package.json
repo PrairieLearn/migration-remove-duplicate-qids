@@ -1,0 +1,23 @@
+{
+  "name": "migration-remove-duplicate-qids",
+  "version": "1.0.0",
+  "description": "",
+  "main": "courseHasDuplicateQids.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PrairieLearn/migration-remove-duplicate-qids.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PrairieLearn/migration-remove-duplicate-qids/issues"
+  },
+  "homepage": "https://github.com/PrairieLearn/migration-remove-duplicate-qids#readme",
+  "dependencies": {
+    "detect-json-indent": "0.0.3",
+    "fs-extra": "^8.1.0"
+  }
+}
