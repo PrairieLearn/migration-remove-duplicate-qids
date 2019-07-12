@@ -18,6 +18,7 @@
   "homepage": "https://github.com/PrairieLearn/migration-remove-duplicate-qids#readme",
   "dependencies": {
     "detect-json-indent": "0.0.3",
-    "fs-extra": "^8.1.0"
+    "fs-extra": "^8.1.0",
+    "prettier": "^1.18.2"
   }
 }

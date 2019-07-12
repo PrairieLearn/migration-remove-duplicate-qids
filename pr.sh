@@ -1,4 +1,6 @@
 cat <<-\EOF
+**TL;DR: You will need to fix some of your assessments to be able to sync your course to PrairieLearn in the future. Just click “merge” to automatically fix this. Read on for more context.**
+
 In the coming weeks, we will be deploying [new code](https://github.com/PrairieLearn/PrairieLearn/pull/1581) for PrairieLearn that significantly increases the speed of course syncing. As a part of that, we took the time to add some code to better validate assessments. Part of that is ensuring that a question appears at most once in an assessment, as PrairieLearn does not support including a question more than once per assessment.
 
 Your course has been identified as having one or more assessments that includes a question more than once in an exam. You will need to fix these assessments in order to sync your course in the future. This is an automated PR that fixes these assessments for you.

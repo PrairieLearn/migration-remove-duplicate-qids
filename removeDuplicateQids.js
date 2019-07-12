@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const detectJsonIndent = require('detect-json-indent');
+const prettier = require('prettier');
 
 /**
  * @param {Map} map 
@@ -42,7 +43,6 @@ function removeInstancesOfId(thing, id, count) {
       if (typeof entry !== 'object' || count.value <= 0 || !('id' in entry) || (entry.id !== id)) {
         newArray.push(entry);
       } else {
-        console.log(`removing value; prev count: ${count.value}`);
         count.value -= 1;
       }
     }
@@ -64,22 +64,36 @@ function removeDuplicateId(infoAssessment, id, count) {
 async function removeDuplicateIds(infoAssessmentPath) {
   const assessmentInfoJson = await fs.readFile(infoAssessmentPath, 'utf8');
   const assessmentInfo = JSON.parse(assessmentInfoJson);
-  const indent = detectJsonIndent(assessmentInfoJson);
+  let indent = detectJsonIndent(assessmentInfoJson);
 
   // Walk into zones looking for IDs
   const idCounts = new Map();
   findDuplicateIds(assessmentInfo.zones, idCounts);
   const duplicateIds = [...idCounts.entries()].filter(([_, count]) => count > 1);
   if (duplicateIds.length === 0) return [];
-  console.log(infoAssessmentPath, duplicateIds);
 
   for (const [id, count] of duplicateIds) {
     removeDuplicateId(assessmentInfo, id, count);
   }
 
-  await fs.writeJSON(infoAssessmentPath, assessmentInfo, { spaces: indent });
+  let useTabs = false;
+  let tabWidth;
+  if (indent === '\t') {
+    useTabs = true;
+  } else {
+    tabWidth = indent.length || 2;
+  }
 
-  return [...duplicateIds];
+  const newJson = prettier.format(JSON.stringify(assessmentInfo), {
+    useTabs,
+    tabWidth,
+    printWidth: 120,
+    parser: 'json',
+  });
+
+  await fs.writeFile(infoAssessmentPath, newJson, { spaces: indent });
+
+  return [...duplicateIds].map(([id, count]) => id);
 }
 
 (async () => {
@@ -112,9 +126,9 @@ async function removeDuplicateIds(infoAssessmentPath) {
       }
       const duplicateIds = await removeDuplicateIds(assessmentInfoPath);
       if (duplicateIds.length === 0) continue;
-      duplicatesListMarkdown += `* **${courseInstance} - ${assessment}**\n`;
+      duplicatesListMarkdown += `**${courseInstance} - ${assessment}**\n`;
       for (const id of duplicateIds) {
-        duplicatesListMarkdown += `  * ${id}\n`;
+        duplicatesListMarkdown += `* ${id}\n`;
       }
       duplicatesListMarkdown += '\n';
     }
@@ -123,4 +137,7 @@ async function removeDuplicateIds(infoAssessmentPath) {
   const dataDir = process.env.SHEPHERD_DATA_DIR;
   if (!dataDir) return;
   await fs.writeFile(path.join(dataDir, 'dupeslist.md'), duplicatesListMarkdown);;
-})().catch(err => console.error(err));
+})().catch(err => {
+  console.error(err)
+  process.exit(1);
+});
